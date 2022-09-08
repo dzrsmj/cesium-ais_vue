@@ -253,8 +253,39 @@ export default {
       return property;
     },
     connectLine(data) {
-
-    }
+      this.clearBoatLineEntities();
+      let boatLineColor = Cesium.Color.fromRandom();
+      let pointsOnLine = [];
+      data.points.forEach((element) => {
+        pointsOnLine.push(Number(element.lon));
+        pointsOnLine.push(Number(element.lat));
+      });
+      this.viewer.entities.add({
+        name: "boat connect line",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArray(pointsOnLine),
+          width: 4,
+          material: new Cesium.PolylineArrowMaterialProperty(
+            boatLineColor
+          ),
+          clampToGround: true,
+        },
+      });
+      const tempEntities = this.viewer.entities._entities._array;
+      const length = tempEntities.length;
+      const lineEntity = tempEntities[length - 1];
+      this.viewer.zoomTo(lineEntity);
+    },
+    //清除线实体
+    clearBoatLineEntities() {
+      const entitys = this.viewer.entities._entities._array;
+      let length = entitys.length;
+      for (let f = length - 1; f >= 0; f--) {
+        if (entitys[f]._name && entitys[f]._name === "boat connect line") {
+          this.viewer.entities.remove(entitys[f]);
+        }
+      }
+    },
   }
 }
 </script>
